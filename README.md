@@ -59,7 +59,7 @@ iOSアプリ「アメリカ国道便覧」が使用する、US Route (U.S. Numbe
 {
   "source": "© OpenStreetMap contributors (ODbL 1.0)",
   "osmSnapshotDate": "2026-09-09",
-  "schemaVersion": "osm-1.3",
+  "schemaVersion": "osm-1.4",
   "highways": [
     {
       "id": "us-421",
@@ -85,12 +85,12 @@ iOSアプリ「アメリカ国道便覧」が使用する、US Route (U.S. Numbe
 | フィールド | 内容 |
 | --- | --- |
 | `osmSnapshotDate` | OSM データの取得日 |
-| `schemaVersion` | スキーマ版 (`osm-1.2`) |
+| `schemaVersion` | スキーマ版 (`osm-1.4`) |
 | `id` / `sign` / `signNumber` | 路線の識別子・表示名・番号 (サフィックスを含む) |
 | `signType` | `"U"` (US Route) |
 | `states` | 通過州の略号。走行方向 (奇数は南→北 / 偶数は西→東) の順 |
 | `originState` / `terminalState` | 起点州・終点州。奇数番号は南端、偶数番号は西端が起点 |
-| `originLat` / `originLon` / `terminalLat` / `terminalLon` | 起終点の座標 (環状路線は `null`) |
+| `originLat` / `originLon` / `terminalLat` / `terminalLon` | 起終点の座標 (環状路線は `null`)。リレーションが行き止まる点のうち最も離れた2点 |
 | `stateCount` | 通過州数 |
 | `lengthMi` / `lengthKm` | 距離 (海上区間を含まない) |
 | `isLoop` | 環状路線かどうか |
@@ -121,8 +121,10 @@ OSM を再取得して更新するときは、アプリ本体と本リポジト�
    - 通過州の不一致ゼロ
    - 「残置承認以外の間隙 0箇所」
    - 縫合・直線補完の箇所数に不自然な増減がないこと
-4. 承認リスト (`KNOWN_DISCONTINUOUS` / `ACCEPTED_OSM_GAPS`) を見直す
+4. `python3 scripts/verify_endpoints.py` — 起終点マーカーの検証
+   (全路線がポリラインの端に載っているか / 公式の起終点都市との突き合わせ)
+5. 承認リスト (`KNOWN_DISCONTINUOUS` / `ACCEPTED_OSM_GAPS`) を見直す
    — OSM 側の整備で解消した間隙はリストから削除し、新たに出た間隙は位置を
    確認して分類を追加する
-5. 本リポジトリに `highways.json` をコピーしてコミットする
-6. スキーマを変えた場合は `schemaVersion` を上げ、上記のフォーマット表も更新する
+6. 本リポジトリに `highways.json` をコピーしてコミットする
+7. スキーマを変えた場合は `schemaVersion` を上げ、上記のフォーマット表も更新する
