@@ -59,7 +59,7 @@ iOSアプリ「アメリカ国道便覧」が使用する、US Route (U.S. Numbe
 {
   "source": "© OpenStreetMap contributors (ODbL 1.0)",
   "osmSnapshotDate": "2026-09-09",
-  "schemaVersion": "osm-1.2",
+  "schemaVersion": "osm-1.3",
   "highways": [
     {
       "id": "us-421",
@@ -95,8 +95,8 @@ iOSアプリ「アメリカ国道便覧」が使用する、US Route (U.S. Numbe
 | `lengthMi` / `lengthKm` | 距離 (海上区間を含まない) |
 | `isLoop` | 環状路線かどうか |
 | `chainCount` | 連続した区間 (鎖) の本数。2以上なら不連続路線 |
-| `discontinuityType` | 不連続の分類 (`chainCount >= 2` のみ)。`official` = 公式の不連続、`osm` = OSMのリレーション未整備 |
-| `discontinuityNote` | 不連続の内容 (日本語) |
+| `discontinuityType` | 不連続の分類 (`chainCount >= 2` のみ)。`official` = 公式の不連続 / `osm` = OSMのリレーション未整備 / `mixed` = 両方を含む |
+| `discontinuities` | 途切れている箇所ごとの内訳。`type` (official / osm)、`km` (直線距離)、`note` (内容) |
 | `polylines` | 描画用のポリライン。座標は `[経度, 緯度]` の順、小数第5位 |
 | `ferryMi` / `ferryKm` / `ferryPolylines` | 海上区間 (US 9 / US 10 のみ) |
 
@@ -109,3 +109,20 @@ iOSアプリ「アメリカ国道便覧」が使用する、US Route (U.S. Numbe
 - ODbL 1.0 全文: `LICENSE`
 - https://opendatacommons.org/licenses/odbl/1-0/
 - https://www.openstreetmap.org/copyright
+
+## データ更新の手順
+
+OSM を再取得して更新するときは、アプリ本体と本リポジトリの両方に反映します。
+
+1. `python3 scripts/download_osm.py --force` — 48州+DC を再取得 (約50分)
+2. `python3 scripts/preprocess_osm.py` — `highways.json` を再生成 (約20分)
+3. サマリで確認する
+   - 公式延長の警告ゼロ (定義差の US 11 を除く)
+   - 通過州の不一致ゼロ
+   - 「残置承認以外の間隙 0箇所」
+   - 縫合・直線補完の箇所数に不自然な増減がないこと
+4. 承認リスト (`KNOWN_DISCONTINUOUS` / `ACCEPTED_OSM_GAPS`) を見直す
+   — OSM 側の整備で解消した間隙はリストから削除し、新たに出た間隙は位置を
+   確認して分類を追加する
+5. 本リポジトリに `highways.json` をコピーしてコミットする
+6. スキーマを変えた場合は `schemaVersion` を上げ、上記のフォーマット表も更新する
