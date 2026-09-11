@@ -58,7 +58,7 @@ iOSアプリ「アメリカ国道便覧」が使用する、US Route (U.S. Numbe
 ```json
 {
   "source": "© OpenStreetMap contributors (ODbL 1.0)",
-  "osmSnapshotDate": "2026-09-09",
+  "osmSnapshotDate": "2026-09-11",
   "schemaVersion": "osm-1.4",
   "highways": [
     {
@@ -84,7 +84,7 @@ iOSアプリ「アメリカ国道便覧」が使用する、US Route (U.S. Numbe
 
 | フィールド | 内容 |
 | --- | --- |
-| `osmSnapshotDate` | OSM データの取得日 |
+| `osmSnapshotDate` | OSM データの日付 (Overpass のデータベース時刻 `timestamp_osm_base`、UTC) |
 | `schemaVersion` | スキーマ版 (`osm-1.4`) |
 | `id` / `sign` / `signNumber` | 路線の識別子・表示名・番号 (サフィックスを含む) |
 | `signType` | `"U"` (US Route) |
@@ -114,7 +114,9 @@ iOSアプリ「アメリカ国道便覧」が使用する、US Route (U.S. Numbe
 
 OSM を再取得して更新するときは、アプリ本体と本リポジトリの両方に反映します。
 
-1. `python3 scripts/download_osm.py --force` — 48州+DC を再取得 (約50分)
+1. `python3 scripts/download_osm.py --force` — 48州+DC を再取得 (約50分〜3時間)。
+   応答の DB 時刻を検証し、更新の止まったミラーの応答は採らない。途中で止まった場合は
+   残りの州を `--force <州...>` で指定して取り直し、全ファイルの DB 時刻が当日であることを確かめる
 2. `python3 scripts/preprocess_osm.py` — `highways.json` を再生成 (約20分)
 3. サマリで確認する
    - 公式延長の警告ゼロ (定義差の US 11 を除く)
